@@ -74,7 +74,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
             },
           },
           resolve: (_source, { id }: { id: string }) => {
-            return prisma.user.findUnique({ where: { id } });
+            return prisma.user.findUnique({ where: { id }, include: { profile: true } });
           },
         },
         profile: {
@@ -104,6 +104,9 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     async handler(req) {
       const result = await graphql({
         schema,
+        contextValue: {
+          prisma,
+        },
         source: req.body.query,
         variableValues: req.body.variables,
       });
