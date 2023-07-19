@@ -27,7 +27,7 @@ export const CreateUserInput = new GraphQLInputObjectType({
   }),
 });
 
-export const UserType = new GraphQLObjectType({
+export const UserType: GraphQLObjectType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
     id: { type: UUIDType },
