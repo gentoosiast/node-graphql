@@ -6,6 +6,7 @@ import {
   GraphQLObjectType,
   GraphQLList,
   GraphQLNonNull,
+  GraphQLString,
 } from 'graphql';
 import { MemberType, MemberTypeId } from './types/member-types.js';
 import { MemberTypeId as MemberTypeIdType } from '../member-types/schemas.js';
@@ -141,6 +142,36 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
             _context,
           ) => {
             return prisma.profile.create({ data: dto });
+          },
+        },
+
+        deleteUser: {
+          type: GraphQLString,
+          args: { id: { type: new GraphQLNonNull(UUIDType) } },
+          resolve: async (_source, { id }: { id: string }, _context) => {
+            await prisma.user.delete({ where: { id } });
+
+            return null;
+          },
+        },
+
+        deletePost: {
+          type: GraphQLString,
+          args: { id: { type: new GraphQLNonNull(UUIDType) } },
+          resolve: async (_source, { id }: { id: string }, _context) => {
+            await prisma.post.delete({ where: { id } });
+
+            return null;
+          },
+        },
+
+        deleteProfile: {
+          type: GraphQLString,
+          args: { id: { type: new GraphQLNonNull(UUIDType) } },
+          resolve: async (_source, { id }: { id: string }, _context) => {
+            await prisma.profile.delete({ where: { id } });
+
+            return null;
           },
         },
       },
