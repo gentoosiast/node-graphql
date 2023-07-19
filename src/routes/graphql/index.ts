@@ -28,24 +28,28 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
             return prisma.memberType.findMany();
           },
         },
+
         posts: {
           type: new GraphQLList(PostType),
           resolve() {
             return prisma.post.findMany();
           },
         },
+
         users: {
           type: new GraphQLList(UserType),
           resolve: () => {
             return prisma.user.findMany();
           },
         },
+
         profiles: {
           type: new GraphQLList(ProfileType),
           resolve: () => {
             return prisma.profile.findMany();
           },
         },
+
         memberType: {
           type: MemberType,
           args: {
@@ -57,6 +61,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
             return prisma.memberType.findUnique({ where: { id } });
           },
         },
+
         post: {
           type: PostType,
           args: {
@@ -68,6 +73,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
             return prisma.post.findUnique({ where: { id } });
           },
         },
+
         user: {
           type: UserType,
           args: {
@@ -81,6 +87,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
             });
           },
         },
+
         profile: {
           type: ProfileType,
           args: {
