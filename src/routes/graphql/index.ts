@@ -73,10 +73,9 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
               type: new GraphQLNonNull(UUIDType),
             },
           },
-          resolve: (_source, { id }: { id: string }) => {
+          resolve: (_source, { id }: { id: string }, _context) => {
             return prisma.user.findUnique({
               where: { id },
-              include: { profile: { include: { memberType: true } }, posts: true },
             });
           },
         },
