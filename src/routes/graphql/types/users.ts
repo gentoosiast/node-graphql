@@ -1,4 +1,10 @@
-import { GraphQLObjectType, GraphQLString, GraphQLFloat, GraphQLList } from 'graphql';
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLFloat,
+  GraphQLList,
+  GraphQLInputObjectType,
+} from 'graphql';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library.js';
 import { UUIDType } from './uuid.js';
@@ -12,6 +18,14 @@ interface Context {
 interface SourceProps {
   id: string;
 }
+
+export const CreateUserInput = new GraphQLInputObjectType({
+  name: 'CreateUserInput',
+  fields: () => ({
+    name: { type: UUIDType },
+    balance: { type: GraphQLFloat },
+  }),
+});
 
 export const UserType = new GraphQLObjectType({
   name: 'User',
