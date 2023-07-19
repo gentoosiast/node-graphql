@@ -29,5 +29,19 @@ export const UserType = new GraphQLObjectType({
       resolve: (source: SourceProps, _args, { prisma }: Context) =>
         prisma.post.findMany({ where: { authorId: source.id } }),
     },
+    subscribedToUser: {
+      type: new GraphQLList(UserType),
+      resolve: (source: SourceProps, _args, { prisma }: Context) =>
+        prisma.user.findMany({
+          where: { userSubscribedTo: { some: { authorId: source.id } } },
+        }),
+    },
+    userSubscribedTo: {
+      type: new GraphQLList(UserType),
+      resolve: (source: SourceProps, _args, { prisma }: Context) =>
+        prisma.user.findMany({
+          where: { subscribedToUser: { some: { subscriberId: source.id } } },
+        }),
+    },
   }),
 });
