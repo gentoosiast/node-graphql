@@ -234,6 +234,43 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
             return prisma.profile.update({ where: { id }, data: dto });
           },
         },
+
+        subscribeTo: {
+          type: UserType,
+          args: {
+            userId: { type: new GraphQLNonNull(UUIDType) },
+            authorId: { type: new GraphQLNonNull(UUIDType) },
+          },
+          resolve(_source, { userId, authorId }: { userId: string; authorId: string }) {
+            return prisma.user.update({
+              where: { id: userId },
+              data: { userSubscribedTo: { create: { authorId } } },
+            });
+          },
+        },
+
+        unsubscribeFrom: {
+          type: GraphQLString,
+          args: {
+            userId: { type: new GraphQLNonNull(UUIDType) },
+            authorId: { type: new GraphQLNonNull(UUIDType) },
+          },
+          resolve: async (
+            _source,
+            { userId, authorId }: { userId: string; authorId: string },
+          ) => {
+            await prisma.subscribersOnAuthors.delete({
+              where: {
+                subscriberId_authorId: {
+                  subscriberId: userId,
+                  authorId,
+                },
+              },
+            });
+
+            return null;
+          },
+        },
       },
     }),
   });
