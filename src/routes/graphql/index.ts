@@ -10,9 +10,9 @@ import {
 } from 'graphql';
 import { MemberType, MemberTypeId } from './types/member-types.js';
 import { MemberTypeId as MemberTypeIdType } from '../member-types/schemas.js';
-import { CreatePostInput, PostType } from './types/posts.js';
-import { UserType, CreateUserInput } from './types/users.js';
-import { CreateProfileInput, ProfileType } from './types/profiles.js';
+import { ChangePostInput, CreatePostInput, PostType } from './types/posts.js';
+import { UserType, CreateUserInput, ChangeUserInput } from './types/users.js';
+import { ChangeProfileInput, CreateProfileInput, ProfileType } from './types/profiles.js';
 import { UUIDType } from './types/uuid.js';
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
@@ -179,6 +179,59 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
             await prisma.profile.delete({ where: { id } });
 
             return null;
+          },
+        },
+
+        changeUser: {
+          type: UserType,
+          args: {
+            id: { type: new GraphQLNonNull(UUIDType) },
+            dto: { type: new GraphQLNonNull(ChangeUserInput) },
+          },
+          resolve(
+            _source,
+            { id, dto }: { id: string; dto: { name: string; balance: number } },
+            _context,
+          ) {
+            return prisma.user.update({ where: { id }, data: dto });
+          },
+        },
+
+        changePost: {
+          type: PostType,
+          args: {
+            id: { type: new GraphQLNonNull(UUIDType) },
+            dto: { type: new GraphQLNonNull(ChangePostInput) },
+          },
+          resolve(
+            _source,
+            { id, dto }: { id: string; dto: { title: string; content: string } },
+          ) {
+            return prisma.post.update({ where: { id }, data: dto });
+          },
+        },
+
+        changeProfile: {
+          type: ProfileType,
+          args: {
+            id: { type: new GraphQLNonNull(UUIDType) },
+            dto: { type: new GraphQLNonNull(ChangeProfileInput) },
+          },
+          resolve(
+            _source,
+            {
+              id,
+              dto,
+            }: {
+              id: string;
+              dto: {
+                isMale: boolean;
+                yearOfBirth: number;
+                memberTypeId: MemberTypeIdType;
+              };
+            },
+          ) {
+            return prisma.profile.update({ where: { id }, data: dto });
           },
         },
       },
