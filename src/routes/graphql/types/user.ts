@@ -7,8 +7,8 @@ import {
 } from 'graphql';
 import { ResolverContext } from '../ts-types.js';
 import { UUIDType } from './uuid.js';
-import { ProfileType } from './profiles.js';
-import { PostType } from './posts.js';
+import { ProfileType } from './profile.js';
+import { PostType } from './post.js';
 
 interface SourceProps {
   id: string;

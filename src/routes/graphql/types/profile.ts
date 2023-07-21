@@ -5,7 +5,7 @@ import {
   GraphQLInputObjectType,
 } from 'graphql';
 import { ResolverContext } from '../ts-types.js';
-import { MemberType, MemberTypeId } from './member-types.js';
+import { MemberType, MemberTypeId } from './member-type.js';
 import { MemberTypeId as MemberTypeIdType } from '../../member-types/schemas.js';
 import { UUIDType } from './uuid.js';
 

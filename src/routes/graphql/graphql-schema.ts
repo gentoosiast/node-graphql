@@ -6,11 +6,11 @@ import {
   GraphQLString,
 } from 'graphql';
 import { ResolverContext } from './ts-types.js';
-import { MemberType, MemberTypeId } from './types/member-types.js';
+import { MemberType, MemberTypeId } from './types/member-type.js';
 import { MemberTypeId as MemberTypeIdType } from '../member-types/schemas.js';
-import { ChangePostInput, CreatePostInput, PostType } from './types/posts.js';
-import { ChangeProfileInput, CreateProfileInput, ProfileType } from './types/profiles.js';
-import { ChangeUserInput, CreateUserInput, UserType } from './types/users.js';
+import { ChangePostInput, CreatePostInput, PostType } from './types/post.js';
+import { ChangeProfileInput, CreateProfileInput, ProfileType } from './types/profile.js';
+import { ChangeUserInput, CreateUserInput, UserType } from './types/user.js';
 import { UUIDType } from './types/uuid.js';
 
 export const schema = new GraphQLSchema({
