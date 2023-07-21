@@ -17,7 +17,7 @@ interface SourceProps {
 export const CreateUserInput = new GraphQLInputObjectType({
   name: 'CreateUserInput',
   fields: () => ({
-    name: { type: UUIDType },
+    name: { type: GraphQLString },
     balance: { type: GraphQLFloat },
   }),
 });
