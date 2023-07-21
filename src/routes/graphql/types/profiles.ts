@@ -26,9 +26,9 @@ export const CreateProfileInput = new GraphQLInputObjectType({
 export const ChangeProfileInput = new GraphQLInputObjectType({
   name: 'ChangeProfileInput',
   fields: () => ({
+    memberTypeId: { type: MemberTypeId },
     isMale: { type: GraphQLBoolean },
     yearOfBirth: { type: GraphQLInt },
-    MemberTypeId: { type: MemberTypeId },
   }),
 });
 
