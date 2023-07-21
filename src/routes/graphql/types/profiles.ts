@@ -4,14 +4,40 @@ import {
   GraphQLInt,
   GraphQLInputObjectType,
 } from 'graphql';
+import DataLoader from 'dataloader';
 import { ResolverContext } from '../ts-types.js';
 import { MemberType, MemberTypeId } from './member-types.js';
 import { MemberTypeId as MemberTypeIdType } from '../../member-types/schemas.js';
 import { UUIDType } from './uuid.js';
+import { PrismaClient } from '@prisma/client';
 
 interface SourceProps {
   memberTypeId: MemberTypeIdType;
 }
+
+type MemberTypeType = {
+  id: string;
+  discount: number;
+  postsLimitPerMonth: number;
+};
+
+async function batchLoadMemberTypes(
+  memberTypeIds: string[],
+  prisma: PrismaClient,
+): Promise<MemberTypeType[]> {
+  const memberTypes = await prisma.memberType.findMany({
+    where: { id: { in: memberTypeIds } },
+  });
+
+  const memberTypeMap: { [id: string]: MemberTypeType } = {};
+  memberTypes.forEach((memberType) => {
+    memberTypeMap[memberType.id] = memberType;
+  });
+
+  return memberTypeIds.map((id) => memberTypeMap[id]);
+}
+
+let memberTypeLoader: DataLoader<string, MemberTypeType>;
 
 export const CreateProfileInput = new GraphQLInputObjectType({
   name: 'CreateProfileInput',
@@ -40,8 +66,15 @@ export const ProfileType = new GraphQLObjectType({
     yearOfBirth: { type: GraphQLInt },
     memberType: {
       type: MemberType,
-      resolve: (source: SourceProps, _args, { prisma }: ResolverContext) =>
-        prisma.memberType.findUnique({ where: { id: source.memberTypeId } }),
+      resolve: (source: SourceProps, _args, { prisma }: ResolverContext) => {
+        if (!memberTypeLoader) {
+          memberTypeLoader = new DataLoader<string, MemberTypeType>(
+            async (memberTypeIds) => batchLoadMemberTypes([...memberTypeIds], prisma),
+          );
+        }
+
+        return memberTypeLoader.load(source.memberTypeId);
+      },
     },
   }),
 });
