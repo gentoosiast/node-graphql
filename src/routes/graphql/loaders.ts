@@ -1,7 +1,8 @@
 import { PrismaClient } from '@prisma/client';
+import DataLoader from 'dataloader';
 import { MemberTypeType, Post, Profile, User } from './ts-types.js';
 
-export async function batchLoadMemberTypes(
+async function batchLoadMemberTypes(
   memberTypeIds: string[],
   prisma: PrismaClient,
 ): Promise<MemberTypeType[]> {
@@ -17,7 +18,7 @@ export async function batchLoadMemberTypes(
   return memberTypeIds.map((id) => memberTypeMap[id]);
 }
 
-export async function batchLoadPosts(
+async function batchLoadPosts(
   authorIds: string[],
   prisma: PrismaClient,
 ): Promise<Post[][]> {
@@ -35,7 +36,7 @@ export async function batchLoadPosts(
   return authorIds.map((authorId) => postsByAuthorMap[authorId] || []);
 }
 
-export async function batchLoadProfiles(
+async function batchLoadProfiles(
   userIds: string[],
   prisma: PrismaClient,
 ): Promise<Profile[]> {
@@ -51,7 +52,7 @@ export async function batchLoadProfiles(
   return userIds.map((id) => profilesMap[id]);
 }
 
-export async function batchLoadSubscribers(
+async function batchLoadSubscribers(
   authorIds: string[],
   prisma: PrismaClient,
 ): Promise<User[][]> {
@@ -74,7 +75,7 @@ export async function batchLoadSubscribers(
   return authorIds.map((authorId) => usersMap[authorId] ?? []);
 }
 
-export async function batchLoadSubscriptions(
+async function batchLoadSubscriptions(
   subscriberIds: string[],
   prisma: PrismaClient,
 ): Promise<User[][]> {
@@ -96,3 +97,27 @@ export async function batchLoadSubscriptions(
 
   return subscriberIds.map((subscriberId) => usersMap[subscriberId] ?? []);
 }
+export const createMemberTypeLoader = (prisma: PrismaClient) =>
+  new DataLoader<string, MemberTypeType>(async (memberTypeIds) =>
+    batchLoadMemberTypes([...memberTypeIds], prisma),
+  );
+
+export const createPostLoader = (prisma: PrismaClient) =>
+  new DataLoader<string, Post[]>(async (authorIds) =>
+    batchLoadPosts([...authorIds], prisma),
+  );
+
+export const createProfileLoader = (prisma: PrismaClient) =>
+  new DataLoader<string, Profile>(async (userIds) =>
+    batchLoadProfiles([...userIds], prisma),
+  );
+
+export const createSubscribersLoader = (prisma: PrismaClient) =>
+  new DataLoader<string, User[]>(async (userIds) =>
+    batchLoadSubscribers([...userIds], prisma),
+  );
+
+export const createSubscriptionsLoader = (prisma: PrismaClient) =>
+  new DataLoader<string, User[]>(async (userIds) =>
+    batchLoadSubscriptions([...userIds], prisma),
+  );

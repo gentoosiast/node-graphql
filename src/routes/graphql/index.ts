@@ -2,41 +2,19 @@ import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
 import { createGqlResponseSchema, gqlResponseSchema } from './schemas.js';
 import { graphql, parse, validate } from 'graphql';
 import depthLimit from 'graphql-depth-limit';
-import DataLoader from 'dataloader';
 import { schema } from './graphql-schema.js';
 import {
-  batchLoadMemberTypes,
-  batchLoadPosts,
-  batchLoadProfiles,
-  batchLoadSubscribers,
-  batchLoadSubscriptions,
+  createMemberTypeLoader,
+  createPostLoader,
+  createProfileLoader,
+  createSubscribersLoader,
+  createSubscriptionsLoader,
 } from './loaders.js';
-import { MemberTypeType, Post, Profile, User } from './ts-types.js';
 
 const GRAPHQL_QUERIES_DEPTH_LIMIT = 5;
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   const { prisma, httpErrors } = fastify;
-
-  const memberTypeLoader = new DataLoader<string, MemberTypeType>(async (memberTypeIds) =>
-    batchLoadMemberTypes([...memberTypeIds], prisma),
-  );
-
-  const postLoader = new DataLoader<string, Post[]>(async (authorIds) =>
-    batchLoadPosts([...authorIds], prisma),
-  );
-
-  const profileLoader = new DataLoader<string, Profile>(async (userIds) =>
-    batchLoadProfiles([...userIds], prisma),
-  );
-
-  const subscribersLoader = new DataLoader<string, User[]>(async (userIds) =>
-    batchLoadSubscribers([...userIds], prisma),
-  );
-
-  const subscriptionsLoader = new DataLoader<string, User[]>(async (userIds) =>
-    batchLoadSubscriptions([...userIds], prisma),
-  );
 
   fastify.route({
     url: '/',
@@ -63,11 +41,11 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         contextValue: {
           prisma,
           httpErrors,
-          memberTypeLoader,
-          postLoader,
-          profileLoader,
-          subscribersLoader,
-          subscriptionsLoader,
+          memberTypeLoader: createMemberTypeLoader(prisma),
+          postLoader: createPostLoader(prisma),
+          profileLoader: createProfileLoader(prisma),
+          subscribersLoader: createSubscribersLoader(prisma),
+          subscriptionsLoader: createSubscriptionsLoader(prisma),
         },
         source: query,
         variableValues: variables,
