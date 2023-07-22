@@ -9,8 +9,6 @@ export interface ResolverContext {
   memberTypeLoader: DataLoader<string, MemberTypeType, string>;
   postLoader: DataLoader<string, Post[], string>;
   profileLoader: DataLoader<string, Profile, string>;
-  subscribersLoader: DataLoader<string, User[], string>;
-  subscriptionsLoader: DataLoader<string, User[], string>;
   userLoader: DataLoader<string, User, string>;
 }
 
