@@ -45,12 +45,10 @@ export const schema = new GraphQLSchema({
           const includeArgs: PrismaQueryUsersIncludeArgs = {};
 
           if (fields && 'userSubscribedTo' in fields) {
-            // console.log('userSubscribedTo');
             includeArgs.userSubscribedTo = true;
           }
 
           if (fields && 'subscribedToUser' in fields) {
-            // console.log('subscribedToUser');
             includeArgs.subscribedToUser = true;
           }
 
