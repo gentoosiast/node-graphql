@@ -10,7 +10,7 @@ async function batchLoadMemberTypes(
     where: { id: { in: memberTypeIds } },
   });
 
-  const memberTypeMap: { [id: string]: MemberTypeType } = {};
+  const memberTypeMap: Record<string, MemberTypeType> = {};
   memberTypes.forEach((memberType) => {
     memberTypeMap[memberType.id] = memberType;
   });
@@ -24,7 +24,7 @@ async function batchLoadPosts(
 ): Promise<Post[][]> {
   const posts = await prisma.post.findMany({ where: { authorId: { in: authorIds } } });
 
-  const postsByAuthorMap: { [authorId: string]: Post[] } = {};
+  const postsByAuthorMap: Record<string, Post[]> = {};
 
   posts.forEach((post) => {
     if (!postsByAuthorMap[post.authorId]) {
@@ -44,7 +44,7 @@ async function batchLoadProfiles(
     where: { userId: { in: userIds } },
   });
 
-  const profilesMap: { [id: string]: Profile } = {};
+  const profilesMap: Record<string, Profile> = {};
   profiles.forEach((profile) => {
     profilesMap[profile.userId] = profile;
   });
