@@ -11,6 +11,7 @@ export interface ResolverContext {
   profileLoader: DataLoader<string, Profile, string>;
   subscribersLoader: DataLoader<string, User[], string>;
   subscriptionsLoader: DataLoader<string, User[], string>;
+  userLoader: DataLoader<string, User, string>;
 }
 
 export type MemberTypeType = {
@@ -31,8 +32,23 @@ export type Profile = {
   yearOfBirth: number;
 };
 
+type SubscribedToUser = {
+  subscriberId: string;
+};
+
+type UserSubscribedTo = {
+  authorId: string;
+};
+
 export type User = {
   id: string;
   name: string;
   balance: number;
+  subscribedToUser?: SubscribedToUser[];
+  userSubscribedTo?: UserSubscribedTo[];
+};
+
+export type PrismaQueryUsersIncludeArgs = {
+  userSubscribedTo?: true;
+  subscribedToUser?: true;
 };

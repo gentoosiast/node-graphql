@@ -7,8 +7,7 @@ import {
   createMemberTypeLoader,
   createPostLoader,
   createProfileLoader,
-  createSubscribersLoader,
-  createSubscriptionsLoader,
+  createUserLoader,
 } from './loaders.js';
 
 const GRAPHQL_QUERIES_DEPTH_LIMIT = 5;
@@ -44,8 +43,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
           memberTypeLoader: createMemberTypeLoader(prisma),
           postLoader: createPostLoader(prisma),
           profileLoader: createProfileLoader(prisma),
-          subscribersLoader: createSubscribersLoader(prisma),
-          subscriptionsLoader: createSubscriptionsLoader(prisma),
+          userLoader: createUserLoader(prisma),
         },
         source: query,
         variableValues: variables,

@@ -5,14 +5,10 @@ import {
   GraphQLList,
   GraphQLInputObjectType,
 } from 'graphql';
-import { ResolverContext } from '../ts-types.js';
+import { ResolverContext, User } from '../ts-types.js';
 import { UUIDType } from './uuid.js';
 import { ProfileType } from './profile.js';
 import { PostType } from './post.js';
-
-interface SourceProps {
-  id: string;
-}
 
 export const CreateUserInput = new GraphQLInputObjectType({
   name: 'CreateUserInput',
@@ -38,29 +34,39 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
     balance: { type: GraphQLFloat },
     profile: {
       type: ProfileType,
-      resolve: (source: SourceProps, _args, { profileLoader }: ResolverContext) => {
+      resolve: (source: User, _args, { profileLoader }: ResolverContext) => {
         return profileLoader.load(source.id);
       },
     },
 
     posts: {
       type: new GraphQLList(PostType),
-      resolve: (source: SourceProps, _args, { postLoader }: ResolverContext) => {
+      resolve: (source: User, _args, { postLoader }: ResolverContext) => {
         return postLoader.load(source.id);
       },
     },
 
     subscribedToUser: {
       type: new GraphQLList(UserType),
-      resolve: (source: SourceProps, _args, { subscribersLoader }: ResolverContext) => {
-        return subscribersLoader.load(source.id);
+      resolve: ({ subscribedToUser }: User, _args, { userLoader }: ResolverContext) => {
+        if (!subscribedToUser) {
+          return [];
+        }
+
+        const subscriberIds = subscribedToUser.map(({ subscriberId }) => subscriberId);
+        return userLoader.loadMany(subscriberIds);
       },
     },
 
     userSubscribedTo: {
       type: new GraphQLList(UserType),
-      resolve: (source: SourceProps, _args, { subscriptionsLoader }: ResolverContext) => {
-        return subscriptionsLoader.load(source.id);
+      resolve: ({ userSubscribedTo }: User, _args, { userLoader }: ResolverContext) => {
+        if (!userSubscribedTo) {
+          return [];
+        }
+
+        const authorIds = userSubscribedTo.map(({ authorId }) => authorId);
+        return userLoader.loadMany(authorIds);
       },
     },
   }),
