@@ -5,9 +5,19 @@ import {
   GraphQLSchema,
   GraphQLString,
 } from 'graphql';
-import { PrismaQueryUsersIncludeArgs, ResolverContext, User } from './ts-types.js';
+import {
+  ChangePostDto,
+  ChangeProfileDto,
+  ChangeUserDto,
+  CreatePostDto,
+  CreateProfileDto,
+  CreateUserDto,
+  PrismaQueryUsersIncludeArgs,
+  ResolverContext,
+  SubscribeDto,
+  UserEntity,
+} from './ts-types.js';
 import { MemberType, MemberTypeId } from './types/member-type.js';
-import { MemberTypeId as MemberTypeIdType } from '../member-types/schemas.js';
 import { ChangePostInput, CreatePostInput, PostType } from './types/post.js';
 import { ChangeProfileInput, CreateProfileInput, ProfileType } from './types/profile.js';
 import { ChangeUserInput, CreateUserInput, UserType } from './types/user.js';
@@ -55,7 +65,7 @@ export const schema = new GraphQLSchema({
           const users = await prisma.user.findMany({ include: includeArgs });
 
           const idsToPrime = new Set<string>();
-          const userMap = new Map<string, User>();
+          const userMap = new Map<string, UserEntity>();
           users.forEach((user) => {
             userMap.set(user.id, user);
             if (includeArgs.userSubscribedTo) {
@@ -149,7 +159,7 @@ export const schema = new GraphQLSchema({
         args: { dto: { type: new GraphQLNonNull(CreateUserInput) } },
         resolve: (
           _source,
-          { dto }: { dto: { name: string; balance: number } },
+          { dto }: { dto: CreateUserDto },
           { prisma }: ResolverContext,
         ) => {
           return prisma.user.create({ data: dto });
@@ -161,7 +171,7 @@ export const schema = new GraphQLSchema({
         args: { dto: { type: new GraphQLNonNull(CreatePostInput) } },
         resolve: (
           _source,
-          { dto }: { dto: { authorId: string; title: string; content: string } },
+          { dto }: { dto: CreatePostDto },
           { prisma }: ResolverContext,
         ) => {
           return prisma.post.create({ data: dto });
@@ -176,12 +186,7 @@ export const schema = new GraphQLSchema({
           {
             dto,
           }: {
-            dto: {
-              userId: string;
-              memberTypeId: MemberTypeIdType;
-              isMale: boolean;
-              yearOfBirth: number;
-            };
+            dto: CreateProfileDto;
           },
           { prisma }: ResolverContext,
         ) => {
@@ -232,7 +237,7 @@ export const schema = new GraphQLSchema({
         },
         resolve(
           _source,
-          { id, dto }: { id: string; dto: { name: string; balance: number } },
+          { id, dto }: { id: string; dto: ChangeUserDto },
           { prisma, userLoader }: ResolverContext,
         ) {
           userLoader.clear(id);
@@ -248,7 +253,7 @@ export const schema = new GraphQLSchema({
         },
         resolve(
           _source,
-          { id, dto }: { id: string; dto: { title: string; content: string } },
+          { id, dto }: { id: string; dto: ChangePostDto },
           { prisma }: ResolverContext,
         ) {
           return prisma.post.update({ where: { id }, data: dto });
@@ -268,11 +273,7 @@ export const schema = new GraphQLSchema({
             dto,
           }: {
             id: string;
-            dto: {
-              isMale: boolean;
-              yearOfBirth: number;
-              memberTypeId: MemberTypeIdType;
-            };
+            dto: ChangeProfileDto;
           },
           { prisma }: ResolverContext,
         ) {
@@ -288,7 +289,7 @@ export const schema = new GraphQLSchema({
         },
         resolve(
           _source,
-          { userId, authorId }: { userId: string; authorId: string },
+          { userId, authorId }: SubscribeDto,
           { prisma, userLoader }: ResolverContext,
         ) {
           userLoader.clear(userId);
@@ -307,7 +308,7 @@ export const schema = new GraphQLSchema({
         },
         resolve: async (
           _source,
-          { userId, authorId }: { userId: string; authorId: string },
+          { userId, authorId }: SubscribeDto,
           { prisma, userLoader }: ResolverContext,
         ) => {
           userLoader.clear(userId);

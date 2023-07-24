@@ -5,7 +5,7 @@ import {
   GraphQLList,
   GraphQLInputObjectType,
 } from 'graphql';
-import { ResolverContext, User } from '../ts-types.js';
+import { ResolverContext, UserEntity } from '../ts-types.js';
 import { UUIDType } from './uuid.js';
 import { ProfileType } from './profile.js';
 import { PostType } from './post.js';
@@ -34,21 +34,25 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
     balance: { type: GraphQLFloat },
     profile: {
       type: ProfileType,
-      resolve: (source: User, _args, { profileLoader }: ResolverContext) => {
+      resolve: (source: UserEntity, _args, { profileLoader }: ResolverContext) => {
         return profileLoader.load(source.id);
       },
     },
 
     posts: {
       type: new GraphQLList(PostType),
-      resolve: (source: User, _args, { postLoader }: ResolverContext) => {
+      resolve: (source: UserEntity, _args, { postLoader }: ResolverContext) => {
         return postLoader.load(source.id);
       },
     },
 
     subscribedToUser: {
       type: new GraphQLList(UserType),
-      resolve: ({ subscribedToUser }: User, _args, { userLoader }: ResolverContext) => {
+      resolve: (
+        { subscribedToUser }: UserEntity,
+        _args,
+        { userLoader }: ResolverContext,
+      ) => {
         if (!subscribedToUser) {
           return [];
         }
@@ -60,7 +64,11 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
 
     userSubscribedTo: {
       type: new GraphQLList(UserType),
-      resolve: ({ userSubscribedTo }: User, _args, { userLoader }: ResolverContext) => {
+      resolve: (
+        { userSubscribedTo }: UserEntity,
+        _args,
+        { userLoader }: ResolverContext,
+      ) => {
         if (!userSubscribedTo) {
           return [];
         }
